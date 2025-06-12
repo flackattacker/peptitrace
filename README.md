@@ -1,4 +1,4 @@
-# PeptideXP - Anonymous Peptide Experience Platform
+# PeptiTrace - Anonymous Peptide Experience Platform
 
 PeptideXP is an open-source, anonymous platform where users can share their peptide experiences and explore aggregated community data. The application prioritizes privacy, simplicity, and community-driven insights without requiring user registration.
 
