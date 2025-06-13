@@ -7,8 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "cd ../client && npm install && npm run build",
-    "postinstall": "npm run build"
+    "build": "echo 'No build step required for server'"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
