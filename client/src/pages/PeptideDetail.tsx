@@ -319,7 +319,16 @@ export function PeptideDetail() {
                     <h3 className="text-lg font-semibold mb-2">Popularity</h3>
                     <div className="flex items-center gap-2">
                       <TrendingUp className="h-4 w-4 text-blue-500" />
-                      <span>{peptide.popularity} experiences shared</span>
+                      <div className="flex-1">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Popularity Score</span>
+                          <span>{peptide.popularity}%</span>
+                        </div>
+                        <Progress value={peptide.popularity} className="h-2" />
+                      </div>
+                    </div>
+                    <div className="mt-2 text-sm text-muted-foreground">
+                      Based on {peptide.totalExperiences} experiences and recent activity
                     </div>
                   </div>
                 </div>

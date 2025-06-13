@@ -9,7 +9,7 @@ class PeptideService {
       // Get all peptides
       const peptides = await Peptide.find({});
       
-      // Get experience counts and average ratings for each peptide
+      // Get experience counts, average ratings, and recency for each peptide
       const peptideStats = await Experience.aggregate([
         {
           $group: {
@@ -26,7 +26,9 @@ class PeptideService {
                   }
                 }
               }
-            }
+            },
+            // Get the most recent experience date
+            lastExperienceDate: { $max: '$createdAt' }
           }
         }
       ]);
@@ -35,17 +37,37 @@ class PeptideService {
       const statsMap = new Map(
         peptideStats.map(stat => [stat._id, {
           totalExperiences: stat.totalExperiences,
-          averageRating: stat.averageRating || 0
+          averageRating: stat.averageRating || 0,
+          lastExperienceDate: stat.lastExperienceDate
         }])
       );
       
-      // Add stats to each peptide
+      // Calculate popularity score for each peptide
+      const now = new Date();
       const peptidesWithStats = peptides.map(peptide => {
-        const stats = statsMap.get(peptide.name) || { totalExperiences: 0, averageRating: 0 };
+        const stats = statsMap.get(peptide.name) || { 
+          totalExperiences: 0, 
+          averageRating: 0,
+          lastExperienceDate: null
+        };
+        
+        // Calculate popularity score based on:
+        // 1. Number of experiences (weight: 0.4)
+        // 2. Average rating (weight: 0.4)
+        // 3. Recency of experiences (weight: 0.2)
+        const experienceScore = Math.min(stats.totalExperiences / 10, 1) * 0.4; // Cap at 10 experiences
+        const ratingScore = (stats.averageRating / 10) * 0.4; // Assuming 10 is max rating
+        const recencyScore = stats.lastExperienceDate 
+          ? Math.max(0, 1 - (now - new Date(stats.lastExperienceDate)) / (30 * 24 * 60 * 60 * 1000)) * 0.2 // 30 days decay
+          : 0;
+        
+        const popularityScore = Math.round((experienceScore + ratingScore + recencyScore) * 100);
+        
         return {
           ...peptide.toObject(),
           totalExperiences: stats.totalExperiences,
-          averageRating: stats.averageRating
+          averageRating: stats.averageRating,
+          popularity: popularityScore
         };
       });
       
@@ -53,7 +75,8 @@ class PeptideService {
       console.log('PeptideService.getAll peptide stats:', peptidesWithStats.map(p => ({
         name: p.name,
         totalExperiences: p.totalExperiences,
-        averageRating: p.averageRating
+        averageRating: p.averageRating,
+        popularity: p.popularity
       })));
       
       return peptidesWithStats;

@@ -35,6 +35,7 @@ export interface PeptideDetail {
   commonEffects: string[];
   sideEffects: string[];
   popularity: number;
+  totalExperiences: number;
   createdAt: string;
   updatedAt: string;
 }
