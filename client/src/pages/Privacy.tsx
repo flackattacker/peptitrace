@@ -481,8 +481,10 @@ export function Privacy() {
                       Our entire codebase is open source and available for public audit. This ensures
                       transparency and allows the community to verify our privacy claims.
                     </p>
-                    <Button variant="outline" className="w-full">
-                      View Source Code on GitHub
+                    <Button variant="outline" className="w-full" asChild>
+                      <a href="https://github.com/flackattacker/peptitrace" target="_blank" rel="noopener noreferrer">
+                        View Source Code on GitHub
+                      </a>
                     </Button>
                   </div>
                 </div>
