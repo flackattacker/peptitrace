@@ -302,30 +302,12 @@ export function Community() {
               <div>
                 <h4 className="font-medium mb-3">Outcomes (1-10 scale)</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                  <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{experience.outcomes.energy}</div>
-                    <div className="text-sm text-muted-foreground">Energy</div>
-                  </div>
-                  <div className="text-center p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">{experience.outcomes.sleep}</div>
-                    <div className="text-sm text-muted-foreground">Sleep</div>
-                  </div>
-                  <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{experience.outcomes.mood}</div>
-                    <div className="text-sm text-muted-foreground">Mood</div>
-                  </div>
-                  <div className="text-center p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">{experience.outcomes.performance}</div>
-                    <div className="text-sm text-muted-foreground">Performance</div>
-                  </div>
-                  <div className="text-center p-3 bg-teal-50 dark:bg-teal-950 rounded-lg">
-                    <div className="text-2xl font-bold text-teal-600">{experience.outcomes.recovery}</div>
-                    <div className="text-sm text-muted-foreground">Recovery</div>
-                  </div>
-                  <div className="text-center p-3 bg-red-50 dark:bg-red-950 rounded-lg">
-                    <div className="text-2xl font-bold text-red-600">{experience.outcomes.sideEffects}</div>
-                    <div className="text-sm text-muted-foreground">Side Effects</div>
-                  </div>
+                  {Object.entries(experience.outcomes).map(([effect, rating], index) => (
+                    <div key={effect} className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">{rating}</div>
+                      <div className="text-sm text-muted-foreground">{effect}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
 

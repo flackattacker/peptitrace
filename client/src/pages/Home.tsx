@@ -38,10 +38,10 @@ interface AnalyticsData {
   totalExperiences: number;
   totalPeptides: number;
   averageRating: number;
-  experienceGrowth: number;
-  categories: number;
-  activeUsers: number;
-  trendingCategories: Array<{
+  experienceGrowth?: number;
+  categories?: number;
+  activeUsers?: number;
+  trendingCategories?: Array<{
     name: string;
     growth: number;
   }>;
@@ -58,17 +58,24 @@ export function Home() {
   const [topPeptides, setTopPeptides] = useState<Peptide[]>([])
   const [recentExperiences, setRecentExperiences] = useState<Experience[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setError(null)
         console.log('Home: Starting to fetch data...')
 
         // Fetch analytics
         console.log('Home: Fetching analytics...')
-        const analyticsResult = await getAnalytics() as ApiResponse<AnalyticsData>
+        const analyticsResult = await getAnalytics()
         console.log('Home: Analytics result:', analyticsResult)
+        
+        if (!analyticsResult?.success || !analyticsResult?.data) {
+          throw new Error('Invalid analytics response')
+        }
+        
         setAnalytics(analyticsResult.data)
 
         // Fetch peptides
@@ -101,9 +108,8 @@ export function Home() {
 
         // Handle different response structures
         let experiences: Experience[] = []
-        const response = experiencesResult as AxiosResponse<{ experiences: Experience[] }>
-        if (response?.data?.experiences) {
-          experiences = response.data.experiences
+        if (experiencesResult?.data?.experiences) {
+          experiences = experiencesResult.data.experiences
         } else if (Array.isArray(experiencesResult)) {
           experiences = experiencesResult
         }
@@ -119,6 +125,7 @@ export function Home() {
         console.log('Home: Data fetching completed successfully')
       } catch (error: any) {
         console.error('Home: Error fetching data:', error)
+        setError(error.message)
         toast({
           title: "Error",
           description: error.message,
@@ -136,6 +143,14 @@ export function Home() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-lg">Loading...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-red-500">Error: {error}</div>
       </div>
     )
   }

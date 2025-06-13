@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,7 +16,7 @@ import { submitExperience, type ExperienceSubmission } from "@/api/experiences"
 import { getPeptides, type Peptide } from "@/api/peptides"
 import { getEffects, type Effect } from "@/api/effects"
 import { useToast } from "@/hooks/useToast"
-import { useEffect } from "react"
+import { useAuth } from "@/contexts/AuthContext"
 
 const STEPS = [
   { id: 1, title: "Peptide Details", description: "Basic information about your peptide usage" },
@@ -104,10 +104,11 @@ export function Submit() {
   const [trackingId, setTrackingId] = useState("")
   const [newStackItem, setNewStackItem] = useState("")
   const [newEffect, setNewEffect] = useState("")
-
   const storyEditorRef = useRef<StoryEditorRef>(null)
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { user } = useAuth()
+  const [honeypotField, setHoneypotField] = useState("")
 
   console.log("Submit: Rendering with currentStep:", currentStep)
   console.log("Submit: FormData state:", formData)
@@ -244,7 +245,12 @@ export function Submit() {
     setIsLoading(true)
 
     try {
-      // Prepare submission data
+      // Check honeypot field - if it's filled, reject the submission
+      if (honeypotField) {
+        console.log("Submit: Honeypot field was filled, likely a bot")
+        throw new Error("Invalid submission detected")
+      }
+
       const submissionData: ExperienceSubmission = {
         peptideId: formData.peptideId,
         dosage: formData.dosage,
@@ -258,7 +264,7 @@ export function Submit() {
         timeline: formData.timeline,
         story: formData.story || undefined,
         stack: formData.stack.length > 0 ? formData.stack : undefined,
-        sourcing: Object.values(formData.sourcing).some(v => v) ? formData.sourcing : undefined
+        sourcing: Object.values(formData.sourcing).some(v => v) ? formData.sourcing : undefined,
       }
 
       console.log("Submit: Submitting data:", submissionData)
@@ -715,7 +721,6 @@ export function Submit() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Previous
             </Button>
-
             {currentStep < STEPS.length ? (
               <Button
                 type="button"
@@ -737,6 +742,18 @@ export function Submit() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add honeypot field - hidden from real users but visible to bots */}
+      <div style={{ display: 'none' }} aria-hidden="true">
+        <input
+          type="text"
+          name="website"
+          value={honeypotField}
+          onChange={(e) => setHoneypotField(e.target.value)}
+          autoComplete="off"
+          tabIndex={-1}
+        />
+      </div>
     </div>
   )
 }

@@ -7,12 +7,7 @@ export interface UserDemographics {
 }
 
 export interface Outcomes {
-  energy: number;
-  sleep: number;
-  mood: number;
-  performance: number;
-  recovery: number;
-  sideEffects: number;
+  [key: string]: number;
 }
 
 export interface UserVote {
@@ -37,12 +32,7 @@ export interface Experience {
     activityLevel: string;
   };
   outcomes: {
-    energy: number;
-    sleep: number;
-    mood: number;
-    performance: number;
-    recovery: number;
-    sideEffects: number;
+    [key: string]: number;
   };
   effects: string[];
   timeline: string;
@@ -73,13 +63,14 @@ export interface ExperienceSubmission {
   primaryPurpose: string[];
   demographics: UserDemographics;
   outcomes: Outcomes;
-  effects: string[];
+  effects?: string[];
   timeline: string;
   story?: string;
   stack?: string[];
   sourcing?: {
     [key: string]: boolean;
   };
+  captchaToken?: string;
 }
 
 export interface ExperienceFilters {

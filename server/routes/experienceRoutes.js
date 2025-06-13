@@ -67,6 +67,12 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   console.log('experienceRoutes: POST / endpoint hit');
   try {
+    // Check honeypot field
+    if (req.body.website) {
+      console.log("Experience submission rejected: Honeypot field was filled");
+      return res.status(400).json({ error: "Invalid submission" });
+    }
+
     const experience = await ExperienceService.create(req.user?._id, req.body);
     res.status(201).json({
       success: true,
@@ -74,10 +80,7 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('experienceRoutes: Error in POST /:', error);
-    res.status(400).json({
-      success: false,
-      error: error.message
-    });
+    res.status(500).json({ error: "Failed to submit experience" });
   }
 });
 
