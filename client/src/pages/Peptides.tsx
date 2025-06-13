@@ -183,6 +183,26 @@ export function Peptides() {
         )}
       </div>
 
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <h2 className="text-lg font-semibold text-yellow-800 mb-2">Important Safety Information</h2>
+        <p className="text-yellow-700 mb-3">
+          The information provided on this platform is for educational purposes only and should not be considered medical advice. Peptides are powerful compounds that can have significant effects on the body, and their use should be approached with caution.
+        </p>
+        <div className="text-yellow-700 space-y-1">
+          <p className="font-medium">Before considering any peptide therapy:</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>Consult with a qualified healthcare professional</li>
+            <li>Discuss your medical history and current medications</li>
+            <li>Understand potential risks and side effects</li>
+            <li>Ensure proper dosing and administration</li>
+            <li>Monitor for adverse reactions</li>
+          </ul>
+        </div>
+        <p className="text-yellow-700 mt-3">
+          This platform aggregates user experiences and research data, but individual responses to peptides can vary significantly. Always prioritize your health and safety by seeking professional medical guidance before starting any peptide regimen.
+        </p>
+      </div>
+
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800">{error}</p>
