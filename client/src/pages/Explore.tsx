@@ -200,7 +200,7 @@ export function Explore() {
             <CardContent className="p-6 text-center">
               <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                {analytics?.averageRating?.toFixed(1) || 0}/5
+                {analytics?.averageRating?.toFixed(1) || 0}/10
               </div>
               <div className="text-sm text-muted-foreground">Avg Rating</div>
             </CardContent>
@@ -248,7 +248,7 @@ export function Explore() {
                             <div>
                               <div className="font-medium">{peptide.name}</div>
                               <div className="text-sm text-muted-foreground">
-                                ★ {peptide.rating ? peptide.rating.toFixed(1) : 'N/A'}
+                                ★ {peptide.rating ? peptide.rating.toFixed(1) : 'N/A'}/10
                               </div>
                             </div>
                           </div>
@@ -283,9 +283,9 @@ export function Explore() {
                           <div key={item.peptide} className="space-y-2">
                             <div className="flex justify-between text-sm">
                               <span className="font-medium">{item.peptide}</span>
-                              <span>{averageEffectiveness.toFixed(1)}/5 ({item.experiences} experiences)</span>
+                              <span>{averageEffectiveness.toFixed(1)}/10 ({item.experiences} experiences)</span>
                             </div>
-                            <Progress value={(averageEffectiveness / 5) * 100} className="h-2" />
+                            <Progress value={(averageEffectiveness / 10) * 100} className="h-2" />
                           </div>
                         );
                       })
@@ -359,14 +359,14 @@ export function Explore() {
                               </div>
                               <div className="flex justify-between">
                                 <span>Average Rating</span>
-                                <span>{peptide.averageRating.toFixed(1)}/5</span>
+                                <span>{peptide.averageRating.toFixed(1)}/10</span>
                               </div>
                               <div className="space-y-1">
                                 <div className="text-sm font-medium">Outcomes</div>
                                 {Object.entries(peptide.outcomes).map(([key, value]: [string, any]) => (
                                   <div key={key} className="flex justify-between text-sm">
                                     <span className="capitalize">{key}</span>
-                                    <span>{value.toFixed(1)}/5</span>
+                                    <span>{value.toFixed(1)}/10</span>
                                   </div>
                                 ))}
                               </div>

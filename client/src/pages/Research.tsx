@@ -210,7 +210,7 @@ export function Research() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {analytics?.averageRating ? `${analytics.averageRating}/5` : 'N/A'}
+                  {analytics?.averageRating ? `${analytics.averageRating}/10` : 'N/A'}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {analytics?.averageRating ? 'Community average' : 'No ratings yet'}

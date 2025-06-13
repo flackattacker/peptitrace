@@ -5,66 +5,61 @@ class PeptideService {
   static async getAll() {
     try {
       console.log('PeptideService.getAll called');
-
+      
       // Get all peptides
-      const peptides = await Peptide.find().sort({ name: 1 });
-
-      // Get real experience counts and ratings for each peptide
+      const peptides = await Peptide.find({});
+      
+      // Get experience counts and average ratings for each peptide
       const peptideStats = await Experience.aggregate([
-        { $match: { isActive: true } },
         {
           $group: {
-            _id: '$peptideId',
+            _id: '$peptideName',
             totalExperiences: { $sum: 1 },
+            // Calculate average of all outcome values for each experience
             averageRating: {
               $avg: {
-                $avg: [
-                  '$outcomes.energy',
-                  '$outcomes.sleep',
-                  '$outcomes.mood',
-                  '$outcomes.performance',
-                  '$outcomes.recovery'
-                ]
+                $avg: {
+                  $map: {
+                    input: { $objectToArray: '$outcomes' },
+                    as: 'outcome',
+                    in: '$$outcome.v'
+                  }
+                }
               }
             }
           }
         }
       ]);
-
-      // Create a map of peptide stats
-      const statsMap = {};
-      peptideStats.forEach(stat => {
-        statsMap[stat._id.toString()] = {
+      
+      // Create a map of peptide stats for easy lookup
+      const statsMap = new Map(
+        peptideStats.map(stat => [stat._id, {
           totalExperiences: stat.totalExperiences,
-          averageRating: Math.round(stat.averageRating * 10) / 10
-        };
-      });
-
-      // Combine peptide data with real stats
+          averageRating: stat.averageRating || 0
+        }])
+      );
+      
+      // Add stats to each peptide
       const peptidesWithStats = peptides.map(peptide => {
-        const stats = statsMap[peptide._id.toString()] || {
-          totalExperiences: 0,
-          averageRating: 0
-        };
-
+        const stats = statsMap.get(peptide.name) || { totalExperiences: 0, averageRating: 0 };
         return {
           ...peptide.toObject(),
           totalExperiences: stats.totalExperiences,
           averageRating: stats.averageRating
         };
       });
-
+      
       console.log('PeptideService.getAll completed successfully with real data, count:', peptidesWithStats.length);
-      console.log('PeptideService.getAll peptide stats:', peptidesWithStats.map(p => ({ 
-        name: p.name, 
+      console.log('PeptideService.getAll peptide stats:', peptidesWithStats.map(p => ({
+        name: p.name,
         totalExperiences: p.totalExperiences,
-        averageRating: p.averageRating 
+        averageRating: p.averageRating
       })));
-
+      
       return peptidesWithStats;
     } catch (error) {
-      console.error('PeptideService.getAll error:', error.message);
-      throw new Error(`Failed to retrieve peptides: ${error.message}`);
+      console.error('PeptideService.getAll error:', error);
+      throw error;
     }
   }
 

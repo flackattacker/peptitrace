@@ -6,115 +6,61 @@ class AnalyticsService {
   static async getUsageAnalytics() {
     try {
       console.log('AnalyticsService.getUsageAnalytics called');
-
-      // Get real data from database
-      const totalExperiences = await Experience.countDocuments({ isActive: true });
+      
+      // Get real data
+      const totalExperiences = await Experience.countDocuments();
       const totalPeptides = await Peptide.countDocuments();
       
-      // Calculate real average rating from experiences
-      const experienceRatings = await Experience.aggregate([
-        { $match: { isActive: true } },
-        {
-          $addFields: {
-            averageRating: {
-              $avg: [
-                '$outcomes.energy',
-                '$outcomes.sleep', 
-                '$outcomes.mood',
-                '$outcomes.performance',
-                '$outcomes.recovery'
-              ]
-            }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            overallAverage: { $avg: '$averageRating' }
-          }
+      // Calculate average rating from all experiences
+      const experiences = await Experience.find({});
+      let totalRating = 0;
+      let ratedExperiences = 0;
+      
+      experiences.forEach(exp => {
+        if (exp.outcomes && exp.outcomes instanceof Map && exp.outcomes.size > 0) {
+          const values = Array.from(exp.outcomes.values());
+          const avg = values.reduce((a, b) => a + b, 0) / values.length;
+          totalRating += avg;
+          ratedExperiences++;
         }
-      ]);
-
-      const averageRating = experienceRatings.length > 0 
-        ? Math.round(experienceRatings[0].overallAverage * 10) / 10 
-        : 0;
-
-      // Get top peptides with real experience counts
-      const topPeptides = await Experience.aggregate([
-        { $match: { isActive: true } },
-        {
-          $addFields: {
-            averageRating: {
-              $avg: [
-                '$outcomes.energy',
-                '$outcomes.sleep', 
-                '$outcomes.mood',
-                '$outcomes.performance',
-                '$outcomes.recovery'
-              ]
-            }
-          }
-        },
-        {
-          $group: {
-            _id: '$peptideName',
-            experiences: { $sum: 1 },
-            avgRating: { $avg: '$averageRating' }
-          }
-        },
-        { $sort: { experiences: -1 } },
-        { $limit: 5 },
-        {
-          $project: {
-            name: '$_id',
-            experiences: 1,
-            rating: { 
-              $cond: [
-                { $eq: ['$avgRating', null] },
-                0,
-                { $round: ['$avgRating', 1] }
-              ]
-            }
-          }
-        }
-      ]);
-
-      // Calculate growth (for now, use 0 since we don't have historical data)
-      const experienceGrowth = 0;
-
-      // Get unique user count (active users)
-      const activeUsers = await Experience.distinct('userId', { isActive: true });
-
-      console.log('AnalyticsService.getUsageAnalytics - Real data calculated:', {
-        totalExperiences,
-        totalPeptides,
-        averageRating,
-        topPeptidesCount: topPeptides.length,
-        activeUsersCount: activeUsers.length
       });
-
-      const result = {
+      
+      const averageRating = ratedExperiences > 0 ? totalRating / ratedExperiences : 0;
+      
+      // Get top peptides by experience count
+      const topPeptides = await Experience.aggregate([
+        { $group: { _id: '$peptideName', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 }
+      ]);
+      
+      const topPeptidesCount = topPeptides.length;
+      
+      // Get active users (users who have submitted experiences in the last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const activeUsers = await Experience.distinct('userId', {
+        createdAt: { $gte: thirtyDaysAgo }
+      });
+      
+      const activeUsersCount = activeUsers.length;
+      
+      const realData = {
         totalExperiences,
         totalPeptides,
         averageRating,
-        experienceGrowth,
-        categories: totalPeptides, // Use peptide count as category count for now
-        activeUsers: activeUsers.length,
-        topPeptides,
-        dataQuality: totalExperiences > 0 ? 85 : 0, // Simple quality metric
-        communityHealth: totalExperiences > 0 ? 90 : 0,
-        responseRate: totalExperiences > 0 ? 75 : 0,
-        trendingCategories: totalExperiences > 0 ? [
-          { name: 'Healing & Recovery', growth: 5 },
-          { name: 'Performance', growth: 3 }
-        ] : []
+        topPeptidesCount,
+        activeUsersCount
       };
-
+      
+      console.log('AnalyticsService.getUsageAnalytics - Real data calculated:', realData);
       console.log('AnalyticsService.getUsageAnalytics completed successfully with real data');
-      return result;
+      
+      return realData;
     } catch (error) {
-      console.error('AnalyticsService.getUsageAnalytics error:', error.message);
-      throw new Error(`Failed to get usage analytics: ${error.message}`);
+      console.error('AnalyticsService.getUsageAnalytics error:', error);
+      throw error;
     }
   }
 
@@ -334,7 +280,7 @@ class AnalyticsService {
   static async getPeptideEffectiveness() {
     try {
       console.log('AnalyticsService.getPeptideEffectiveness called');
-
+      
       // Get real effectiveness data from experiences
       const effectiveness = await Experience.aggregate([
         { $match: { isActive: true } },
@@ -377,7 +323,7 @@ class AnalyticsService {
           }
         }
       ]);
-
+      
       console.log('AnalyticsService.getPeptideEffectiveness completed with real data, count:', effectiveness.length);
       return effectiveness;
     } catch (error) {
