@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const UserService = require('../services/userService');
 const { authenticateToken } = require('./middleware/auth');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 console.log('userRoutes.js: Loading user routes file');
 
@@ -69,6 +71,110 @@ router.put('/me', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('userRoutes: Error in PUT /me:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route POST /api/users/register
+ * @desc Register a new user
+ * @access Public
+ */
+router.post('/register', async (req, res) => {
+  console.log('userRoutes: POST /register endpoint hit');
+  try {
+    const { username, email, password } = req.body;
+    
+    // Check if user already exists
+    const existingUser = await UserService.getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        error: 'User already exists'
+      });
+    }
+
+    // Create new user
+    const user = await UserService.createUser({
+      username,
+      email,
+      password
+    });
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('userRoutes: Error in POST /register:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route POST /api/users/login
+ * @desc Login user
+ * @access Public
+ */
+router.post('/login', async (req, res) => {
+  console.log('userRoutes: POST /login endpoint hit');
+  try {
+    const { email, password } = req.body;
+
+    // Check if user exists
+    const user = await UserService.getUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('userRoutes: Error in POST /login:', error);
     res.status(500).json({
       success: false,
       error: error.message
