@@ -19,7 +19,17 @@ mongoose.connect(MONGODB_URI)
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);
+    process.exit(1); // Exit if we can't connect to the database
   });
+
+// Handle MongoDB connection events
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
 
 // API Routes
 app.use('/api/peptides', require('./routes/peptideRoutes'));
@@ -29,7 +39,12 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'PeptiTrace API is running' });
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  res.json({ 
+    status: 'ok', 
+    message: 'PeptiTrace API is running',
+    database: dbStatus
+  });
 });
 
 // Serve static files from the React app in production
