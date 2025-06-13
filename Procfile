@@ -1,1 +1,1 @@
-web: cd server && npm install && NODE_ENV=production npm run build && npm start 
+web: cd server && npm install --omit=dev && npm run build && NODE_ENV=production npm start 
