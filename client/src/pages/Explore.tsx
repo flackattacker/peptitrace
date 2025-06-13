@@ -247,7 +247,9 @@ export function Explore() {
                             </div>
                             <div>
                               <div className="font-medium">{peptide.name}</div>
-                              <div className="text-sm text-muted-foreground">★ {peptide.rating.toFixed(1)}</div>
+                              <div className="text-sm text-muted-foreground">
+                                ★ {peptide.rating ? peptide.rating.toFixed(1) : 'N/A'}
+                              </div>
                             </div>
                           </div>
                           <div className="text-right">

@@ -25,17 +25,6 @@ const STEPS = [
   { id: 4, title: "Personal Story", description: "Share your detailed experience narrative" }
 ]
 
-const PRIMARY_PURPOSES = [
-  "Muscle gain",
-  "Fat loss",
-  "Recovery",
-  "Anti-aging",
-  "Cognitive enhancement",
-  "Sleep improvement",
-  "Injury healing",
-  "General health"
-]
-
 const EFFECTS_CATEGORIES = [
   { category: "Physical", effects: ["Increased muscle mass", "Reduced body fat", "Improved strength", "Better endurance", "Enhanced recovery"] },
   { category: "Cognitive", effects: ["Better focus", "Improved memory", "Mental clarity", "Reduced brain fog", "Enhanced creativity"] },
@@ -56,12 +45,7 @@ interface FormData {
     activityLevel: string
   }
   outcomes: {
-    energy: number
-    sleep: number
-    mood: number
-    performance: number
-    recovery: number
-    sideEffects: number
+    [key: string]: number  // Changed to dynamic key-value pairs for effects
   }
   effects: string[]
   timeline: string
@@ -92,14 +76,7 @@ const initialFormData: FormData = {
     biologicalSex: "",
     activityLevel: ""
   },
-  outcomes: {
-    energy: 5,
-    sleep: 5,
-    mood: 5,
-    performance: 5,
-    recovery: 5,
-    sideEffects: 5
-  },
+  outcomes: {},  // Will be populated dynamically based on peptide's commonEffects
   effects: [],
   timeline: "",
   story: "",
@@ -163,6 +140,26 @@ export function Submit() {
 
     loadData()
   }, [toast])
+
+  const initializeOutcomes = (peptideId: string) => {
+    const peptide = peptides.find(p => p._id === peptideId)
+    if (peptide) {
+      const newOutcomes: { [key: string]: number } = {}
+      peptide.commonEffects.forEach(effect => {
+        newOutcomes[effect] = 5 // Default to middle rating
+      })
+      setFormData(prev => ({
+        ...prev,
+        outcomes: newOutcomes
+      }))
+    }
+  }
+
+  useEffect(() => {
+    if (formData.peptideId) {
+      initializeOutcomes(formData.peptideId)
+    }
+  }, [formData.peptideId])
 
   const nextStep = () => {
     console.log("Submit: Moving to next step from:", currentStep)
@@ -294,9 +291,9 @@ export function Submit() {
       case 2:
         return formData.primaryPurpose.length > 0 && formData.demographics.ageRange && formData.demographics.biologicalSex && formData.demographics.activityLevel
       case 3:
-        return formData.effects.length > 0 && formData.timeline
+        return formData.timeline
       case 4:
-        return formData.story.length >= 500
+        return formData.story.length >= 100
       default:
         return true
     }
@@ -436,6 +433,44 @@ export function Submit() {
                   </Select>
                 </div>
               </div>
+
+              {/* Vendor Information */}
+              <div className="space-y-4 mt-6">
+                <h3 className="text-lg font-semibold">Vendor Information (Optional)</h3>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="vendorName">Vendor Name</Label>
+                    <Input
+                      type="text"
+                      id="vendorName"
+                      value={formData.vendor.name}
+                      onChange={(e) => updateNestedFormData('vendor', 'name', e.target.value)}
+                      placeholder="Enter vendor name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="vendorQuantity">Quantity Purchased</Label>
+                    <Input
+                      type="text"
+                      id="vendorQuantity"
+                      value={formData.vendor.quantity}
+                      onChange={(e) => updateNestedFormData('vendor', 'quantity', e.target.value)}
+                      placeholder="e.g., 10mg or 100mcg"
+                    />
+                    <p className="mt-1 text-sm text-muted-foreground">Enter quantity with units (mg or mcg)</p>
+                  </div>
+                  <div>
+                    <Label htmlFor="vendorBatchId">Batch ID</Label>
+                    <Input
+                      type="text"
+                      id="vendorBatchId"
+                      value={formData.vendor.batchId}
+                      onChange={(e) => updateNestedFormData('vendor', 'batchId', e.target.value)}
+                      placeholder="Enter batch ID"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -445,14 +480,14 @@ export function Submit() {
               <div className="space-y-4">
                 <Label>Primary Purpose *</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {PRIMARY_PURPOSES.map((purpose) => (
-                    <div key={purpose} className="flex items-center space-x-2">
+                  {peptides.find(p => p._id === formData.peptideId)?.commonEffects?.map((effect) => (
+                    <div key={effect} className="flex items-center space-x-2">
                       <Checkbox
-                        id={purpose}
-                        checked={formData.primaryPurpose.includes(purpose)}
-                        onCheckedChange={() => toggleArrayItem('primaryPurpose', purpose)}
+                        id={effect}
+                        checked={formData.primaryPurpose.includes(effect)}
+                        onCheckedChange={() => toggleArrayItem('primaryPurpose', effect)}
                       />
-                      <Label htmlFor={purpose} className="text-sm">{purpose}</Label>
+                      <Label htmlFor={effect} className="text-sm">{effect}</Label>
                     </div>
                   ))}
                 </div>
@@ -485,12 +520,12 @@ export function Submit() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label>Age Range *</Label>
                   <Select value={formData.demographics.ageRange} onValueChange={(value) => updateNestedFormData('demographics', 'ageRange', value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select age range" />
+                      <SelectValue placeholder="Select range" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="18-25">18-25</SelectItem>
@@ -508,7 +543,7 @@ export function Submit() {
                   <Label>Biological Sex *</Label>
                   <Select value={formData.demographics.biologicalSex} onValueChange={(value) => updateNestedFormData('demographics', 'biologicalSex', value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select" />
+                      <SelectValue placeholder="Select sex" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="male">Male</SelectItem>
@@ -540,17 +575,25 @@ export function Submit() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div className="space-y-6">
-                <Label className="text-base font-medium">Rate Your Experience (1-10)</Label>
-
-                {Object.entries(formData.outcomes).map(([key, value]) => (
-                  <div key={key} className="space-y-2">
+                <Label className="text-base font-medium">Rate Effectiveness of Effects (1-10)</Label>
+                
+                {Object.entries(formData.outcomes).map(([effect, value]) => (
+                  <div key={effect} className="space-y-2">
                     <div className="flex justify-between">
-                      <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</Label>
+                      <Label>{effect}</Label>
                       <span className="text-sm font-medium">{value}/10</span>
                     </div>
                     <Slider
                       value={[value]}
-                      onValueChange={([newValue]) => updateNestedFormData('outcomes', key, newValue)}
+                      onValueChange={([newValue]) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          outcomes: {
+                            ...prev.outcomes,
+                            [effect]: newValue
+                          }
+                        }))
+                      }}
                       max={10}
                       min={1}
                       step={1}
@@ -561,38 +604,51 @@ export function Submit() {
               </div>
 
               <div className="space-y-4">
-                <Label>Effects Experienced *</Label>
-                {EFFECTS_CATEGORIES.map((category) => (
-                  <div key={category.category} className="space-y-3">
-                    <Label className="text-sm font-medium text-muted-foreground">{category.category}</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {category.effects.map((effect) => (
-                        <div key={effect} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={effect}
-                            checked={formData.effects.includes(effect)}
-                            onCheckedChange={() => toggleArrayItem('effects', effect)}
-                          />
-                          <Label htmlFor={effect} className="text-sm">{effect}</Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                <div className="space-y-2">
-                  <Label className="text-sm">Additional Effects</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Add custom effect"
-                      value={newEffect}
-                      onChange={(e) => setNewEffect(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomEffect())}
-                    />
-                    <Button type="button" size="sm" onClick={addCustomEffect}>
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
+                <Label>Additional Effects (Optional)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={newEffect}
+                    onChange={(e) => setNewEffect(e.target.value)}
+                    placeholder="Enter additional effect"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (newEffect.trim()) {
+                        setFormData(prev => ({
+                          ...prev,
+                          effects: [...prev.effects, newEffect.trim()]
+                        }))
+                        setNewEffect("")
+                      }
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {formData.effects.map((effect, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {effect}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-4 w-4 p-0 hover:bg-transparent"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            effects: prev.effects.filter((_, i) => i !== index)
+                          }))
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
                 </div>
               </div>
 
@@ -623,7 +679,7 @@ export function Submit() {
                 <Label className="text-base font-medium">Share Your Story</Label>
                 <p className="text-sm text-muted-foreground">
                   Tell the community about your experience in detail. Your story helps others make informed decisions.
-                  Minimum 500 characters recommended.
+                  Minimum 100 characters recommended.
                 </p>
               </div>
 
@@ -633,7 +689,7 @@ export function Submit() {
                 onChange={(value) => updateFormData('story', value)}
                 placeholder="Share your detailed experience with this peptide..."
                 maxLength={1000}
-                minLength={500}
+                minLength={100}
               />
 
               <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
@@ -648,56 +704,6 @@ export function Submit() {
               </div>
             </div>
           )}
-
-          {/* Vendor Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Vendor Information (Optional)</h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="vendorName" className="block text-sm font-medium text-gray-700">
-                  Vendor Name
-                </label>
-                <input
-                  type="text"
-                  id="vendorName"
-                  name="vendorName"
-                  value={formData.vendor.name}
-                  onChange={(e) => updateFormData('vendor', { ...formData.vendor, name: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label htmlFor="vendorQuantity" className="block text-sm font-medium text-gray-700">
-                  Quantity Purchased
-                </label>
-                <div className="mt-1 flex rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    id="vendorQuantity"
-                    name="vendorQuantity"
-                    value={formData.vendor.quantity}
-                    onChange={(e) => updateFormData('vendor', { ...formData.vendor, quantity: e.target.value })}
-                    placeholder="e.g., 10mg or 100mcg"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-                <p className="mt-1 text-sm text-gray-500">Enter quantity with units (mg or mcg)</p>
-              </div>
-              <div>
-                <label htmlFor="vendorBatchId" className="block text-sm font-medium text-gray-700">
-                  Finnrick Batch ID
-                </label>
-                <input
-                  type="text"
-                  id="vendorBatchId"
-                  name="vendorBatchId"
-                  value={formData.vendor.batchId}
-                  onChange={(e) => updateFormData('vendor', { ...formData.vendor, batchId: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
-          </div>
 
           <div className="flex justify-between pt-6">
             <Button

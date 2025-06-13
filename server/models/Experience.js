@@ -60,46 +60,18 @@ const experienceSchema = new mongoose.Schema({
     }
   },
   outcomes: {
-    energy: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 10
-    },
-    sleep: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 10
-    },
-    mood: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 10
-    },
-    performance: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 10
-    },
-    recovery: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 10
-    },
-    sideEffects: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 10
+    type: Map,
+    of: Number,
+    required: true,
+    validate: {
+      validator: function(v) {
+        return v instanceof Map && v.size > 0;
+      },
+      message: 'Outcomes must be a non-empty Map'
     }
   },
   effects: [{
-    type: String,
-    required: true
+    type: String
   }],
   timeline: {
     type: String,
@@ -190,9 +162,11 @@ experienceSchema.virtual('averageRating').get(function() {
   const outcomes = this.outcomes;
   if (!outcomes) return 0;
   
-  const sum = outcomes.energy + outcomes.sleep + outcomes.mood + 
-              outcomes.performance + outcomes.recovery;
-  return Math.round((sum / 5) * 10) / 10;
+  const values = Array.from(outcomes.values());
+  if (values.length === 0) return 0;
+  
+  const sum = values.reduce((a, b) => a + b, 0);
+  return Math.round((sum / values.length) * 10) / 10;
 });
 
 const Experience = mongoose.model('Experience', experienceSchema);

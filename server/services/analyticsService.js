@@ -68,7 +68,13 @@ class AnalyticsService {
           $project: {
             name: '$_id',
             experiences: 1,
-            rating: { $round: ['$avgRating', 1] }
+            rating: { 
+              $cond: [
+                { $eq: ['$avgRating', null] },
+                0,
+                { $round: ['$avgRating', 1] }
+              ]
+            }
           }
         }
       ]);
@@ -170,7 +176,13 @@ class AnalyticsService {
           $project: {
             name: '$_id',
             experiences: 1,
-            rating: { $round: ['$avgRating', 1] },
+            rating: { 
+              $cond: [
+                { $eq: ['$avgRating', null] },
+                0,
+                { $round: ['$avgRating', 1] }
+              ]
+            },
             _id: 0
           }
         }
@@ -185,16 +197,8 @@ class AnalyticsService {
             effectiveness: {
               $avg: {
                 $divide: [
-                  {
-                    $add: [
-                      '$outcomes.energy',
-                      '$outcomes.sleep',
-                      '$outcomes.mood',
-                      '$outcomes.performance',
-                      '$outcomes.recovery'
-                    ]
-                  },
-                  5
+                  { $sum: { $objectToArray: '$outcomes' } },
+                  { $size: { $objectToArray: '$outcomes' } }
                 ]
               }
             },
@@ -254,12 +258,37 @@ class AnalyticsService {
         {
           $group: {
             _id: null,
-            energyAvg: { $avg: '$outcomes.energy' },
-            sleepAvg: { $avg: '$outcomes.sleep' },
-            moodAvg: { $avg: '$outcomes.mood' },
-            performanceAvg: { $avg: '$outcomes.performance' },
-            recoveryAvg: { $avg: '$outcomes.recovery' },
-            sideEffectsAvg: { $avg: '$outcomes.sideEffects' }
+            outcomes: {
+              $push: { $objectToArray: '$outcomes' }
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            outcomes: {
+              $reduce: {
+                input: '$outcomes',
+                initialValue: {},
+                in: {
+                  $mergeObjects: [
+                    '$$value',
+                    {
+                      $arrayToObject: {
+                        $map: {
+                          input: '$$this',
+                          as: 'outcome',
+                          in: {
+                            k: '$$outcome.k',
+                            v: { $avg: '$$outcome.v' }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         }
       ]);
@@ -293,7 +322,7 @@ class AnalyticsService {
         topPeptides,
         effectivenessData,
         usageTrends,
-        outcomeDistribution: outcomeDistribution[0] || {},
+        outcomeDistribution: outcomeDistribution[0]?.outcomes || {},
         peptideFrequency
       };
     } catch (error) {
@@ -313,26 +342,37 @@ class AnalyticsService {
           $group: {
             _id: '$peptideName',
             totalExperiences: { $sum: 1 },
-            avgEnergy: { $avg: '$outcomes.energy' },
-            avgSleep: { $avg: '$outcomes.sleep' },
-            avgMood: { $avg: '$outcomes.mood' },
-            avgPerformance: { $avg: '$outcomes.performance' },
-            avgRecovery: { $avg: '$outcomes.recovery' },
-            avgSideEffects: { $avg: '$outcomes.sideEffects' }
+            outcomes: {
+              $push: { $objectToArray: '$outcomes' }
+            }
           }
         },
-        { $sort: { totalExperiences: -1 } },
         {
           $project: {
             peptide: '$_id',
             experiences: '$totalExperiences',
             effectiveness: {
-              energy: { $round: ['$avgEnergy', 1] },
-              sleep: { $round: ['$avgSleep', 1] },
-              mood: { $round: ['$avgMood', 1] },
-              performance: { $round: ['$avgPerformance', 1] },
-              recovery: { $round: ['$avgRecovery', 1] },
-              sideEffects: { $round: ['$avgSideEffects', 1] }
+              $reduce: {
+                input: '$outcomes',
+                initialValue: {},
+                in: {
+                  $mergeObjects: [
+                    '$$value',
+                    {
+                      $arrayToObject: {
+                        $map: {
+                          input: '$$this',
+                          as: 'outcome',
+                          in: {
+                            k: '$$outcome.k',
+                            v: { $avg: '$$outcome.v' }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
             }
           }
         }
