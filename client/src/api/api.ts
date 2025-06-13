@@ -18,7 +18,7 @@ const getApiInstance = (url: string) => {
 };
 
 const isAuthEndpoint = (url: string): boolean => {
-  return url.includes("/api/auth");
+  return url.includes("/api/users");
 };
 
 // Check if the URL is for the refresh token endpoint to avoid infinite loops
