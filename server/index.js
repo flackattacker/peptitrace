@@ -1,10 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
 const path = require('path');
+const { fileURLToPath } = require('url');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -22,7 +23,7 @@ mongoose.connect(MONGODB_URI)
     process.exit(1); // Exit if we can't connect to the database
   });
 
-// Handle MongoDB connection events
+// Add connection event handlers
 mongoose.connection.on('error', (err) => {
   console.error('MongoDB connection error:', err);
 });
@@ -39,25 +40,24 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
-  res.json({ 
-    status: 'ok', 
-    message: 'PeptiTrace API is running',
-    database: dbStatus
+  res.json({
+    status: 'ok',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
-// Serve static files from the React app in production
+// Serve static files in production
 if (process.env.NODE_ENV === 'production') {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  
   app.use(express.static(path.join(__dirname, '../client/dist')));
   
-  // Handle React routing, return all requests to React app
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 }); 
