@@ -15,8 +15,8 @@ class AnalyticsService {
       const experienceRatings = await Experience.aggregate([
         { $match: { isActive: true } },
         {
-          $project: {
-            averageOutcome: {
+          $addFields: {
+            averageRating: {
               $avg: [
                 '$outcomes.energy',
                 '$outcomes.sleep', 
@@ -30,7 +30,7 @@ class AnalyticsService {
         {
           $group: {
             _id: null,
-            overallAverage: { $avg: '$averageOutcome' }
+            overallAverage: { $avg: '$averageRating' }
           }
         }
       ]);
@@ -43,20 +43,23 @@ class AnalyticsService {
       const topPeptides = await Experience.aggregate([
         { $match: { isActive: true } },
         {
+          $addFields: {
+            averageRating: {
+              $avg: [
+                '$outcomes.energy',
+                '$outcomes.sleep', 
+                '$outcomes.mood',
+                '$outcomes.performance',
+                '$outcomes.recovery'
+              ]
+            }
+          }
+        },
+        {
           $group: {
             _id: '$peptideName',
             experiences: { $sum: 1 },
-            avgRating: {
-              $avg: {
-                $avg: [
-                  '$outcomes.energy',
-                  '$outcomes.sleep', 
-                  '$outcomes.mood',
-                  '$outcomes.performance',
-                  '$outcomes.recovery'
-                ]
-              }
-            }
+            avgRating: { $avg: '$averageRating' }
           }
         },
         { $sort: { experiences: -1 } },

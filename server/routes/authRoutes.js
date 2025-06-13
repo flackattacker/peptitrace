@@ -1,6 +1,9 @@
 const express = require('express');
 const UserService = require('../services/userService');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 const router = express.Router();
 
@@ -44,10 +47,19 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Try to call the correct method
-    const user = await UserService.authenticate(email, password);
-
+    // Check if user exists
+    const user = await User.findOne({ email });
     if (!user) {
+      console.log('Authentication failed for user:', email);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Verify password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       console.log('Authentication failed for user:', email);
       return res.status(400).json({
         success: false,
@@ -114,10 +126,34 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    const user = await UserService.create({ email, password });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists'
+      });
+    }
 
-    // Generate access token for immediate login
+    // Generate username from email (everything before @)
+    const username = email.split('@')[0];
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword
+    });
+
+    await user.save();
+
+    // Generate tokens
     const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
     res.status(201).json({
       success: true,
@@ -125,17 +161,17 @@ router.post('/register', async (req, res) => {
         user: {
           _id: user._id,
           email: user.email,
-          demographics: user.demographics,
-          preferences: user.preferences
+          username: user.username
         },
-        accessToken
+        accessToken,
+        refreshToken
       }
     });
   } catch (error) {
-    console.error('Register endpoint error:', error);
-    res.status(400).json({
+    console.error('Registration error:', error);
+    res.status(500).json({ 
       success: false,
-      message: error.message || 'Registration failed'
+      message: error.message || 'Error registering user' 
     });
   }
 });
@@ -163,6 +199,24 @@ router.post('/refresh', async (req, res) => {
     res.status(400).json({
       success: false,
       message: 'Token refresh failed'
+    });
+  }
+});
+
+// GET /api/auth/validate
+router.get('/validate', async (req, res) => {
+  try {
+    // The authenticateToken middleware will have already verified the token
+    // If we get here, the token is valid
+    res.json({
+      success: true,
+      message: 'Token is valid'
+    });
+  } catch (error) {
+    console.error('Token validation error:', error);
+    res.status(401).json({
+      success: false,
+      message: 'Invalid token'
     });
   }
 });

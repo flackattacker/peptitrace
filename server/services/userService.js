@@ -1,7 +1,7 @@
 const { randomUUID } = require('crypto');
 
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth');
 
 class UserService {

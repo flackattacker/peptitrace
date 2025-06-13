@@ -168,6 +168,381 @@ class SeedService {
             peak: '6-8 hours',
             duration: '12-24 hours'
           }
+        },
+        {
+          name: 'GHRP-6',
+          category: 'Growth Hormone',
+          description: 'Growth hormone releasing peptide-6',
+          detailedDescription: 'GHRP-6 is a synthetic hexapeptide that stimulates the release of growth hormone. It is known for its strong appetite-stimulating effects and growth hormone release.',
+          mechanism: 'Binds to the ghrelin receptor and stimulates the release of growth hormone through the activation of the hypothalamic-pituitary axis.',
+          commonDosage: '100-200 mcg',
+          commonFrequency: '2-3x daily',
+          averageRating: 4.0,
+          totalExperiences: 145,
+          commonEffects: ['Increased appetite', 'Better recovery', 'Muscle growth', 'Improved sleep'],
+          sideEffects: ['Water retention', 'Increased hunger', 'Temporary numbness'],
+          popularity: 75,
+          commonStacks: ['CJC-1295', 'Ipamorelin'],
+          dosageRanges: {
+            low: '100-150 mcg',
+            medium: '150-200 mcg',
+            high: '200-300 mcg'
+          },
+          timeline: {
+            onset: '1-2 weeks',
+            peak: '3-4 weeks',
+            duration: '2-3 weeks post-cycle'
+          }
+        },
+        {
+          name: 'Thymosin Alpha-1',
+          category: 'Healing & Recovery',
+          description: 'Immunomodulatory peptide',
+          detailedDescription: 'Thymosin Alpha-1 is a naturally occurring peptide that plays a crucial role in immune system regulation and has shown potential in various therapeutic applications.',
+          mechanism: 'Modulates immune function by stimulating T-cell production and enhancing the body\'s natural defense mechanisms.',
+          commonDosage: '1-2 mg',
+          commonFrequency: 'Weekly',
+          averageRating: 4.2,
+          totalExperiences: 89,
+          commonEffects: ['Enhanced immunity', 'Better recovery', 'Reduced inflammation', 'Improved energy'],
+          sideEffects: ['Injection site reactions', 'Mild fatigue', 'Headaches'],
+          popularity: 65,
+          commonStacks: ['BPC-157', 'TB-500'],
+          dosageRanges: {
+            low: '1-1.5 mg',
+            medium: '1.5-2 mg',
+            high: '2-2.5 mg'
+          },
+          timeline: {
+            onset: '2-3 weeks',
+            peak: '4-6 weeks',
+            duration: '4-6 weeks post-cycle'
+          }
+        },
+        {
+          name: 'Sermorelin',
+          category: 'Growth Hormone',
+          description: 'Growth hormone releasing hormone analog',
+          detailedDescription: 'Sermorelin is a synthetic analog of growth hormone releasing hormone (GHRH) that stimulates the natural production of growth hormone.',
+          mechanism: 'Binds to GHRH receptors in the pituitary gland, stimulating the production and release of growth hormone in a natural pulsatile pattern.',
+          commonDosage: '100-300 mcg',
+          commonFrequency: 'Daily',
+          averageRating: 4.1,
+          totalExperiences: 112,
+          commonEffects: ['Anti-aging', 'Better sleep', 'Improved recovery', 'Enhanced well-being'],
+          sideEffects: ['Injection site reactions', 'Water retention', 'Joint pain'],
+          popularity: 70,
+          commonStacks: ['Ipamorelin', 'CJC-1295'],
+          dosageRanges: {
+            low: '100-200 mcg',
+            medium: '200-300 mcg',
+            high: '300-400 mcg'
+          },
+          timeline: {
+            onset: '2-3 weeks',
+            peak: '4-6 weeks',
+            duration: '3-4 weeks post-cycle'
+          }
+        },
+        {
+          name: 'DSIP',
+          category: 'Cognitive Enhancement',
+          description: 'Delta sleep-inducing peptide',
+          detailedDescription: 'DSIP is a naturally occurring peptide that promotes deep sleep and has been studied for its potential in sleep regulation and stress management.',
+          mechanism: 'Acts on the central nervous system to promote delta wave sleep and modulate stress response through interaction with various neurotransmitter systems.',
+          commonDosage: '100-200 mcg',
+          commonFrequency: 'Daily',
+          averageRating: 4.3,
+          totalExperiences: 78,
+          commonEffects: ['Better sleep quality', 'Reduced stress', 'Improved recovery', 'Enhanced mood'],
+          sideEffects: ['Drowsiness', 'Mild headaches', 'Temporary fatigue'],
+          popularity: 60,
+          commonStacks: ['Melanotan II', 'PT-141'],
+          dosageRanges: {
+            low: '100-150 mcg',
+            medium: '150-200 mcg',
+            high: '200-250 mcg'
+          },
+          timeline: {
+            onset: '1-2 days',
+            peak: '1-2 weeks',
+            duration: '1-2 days post-dose'
+          }
+        },
+        {
+          name: 'Epitalon',
+          category: 'Anti-Aging',
+          description: 'Telomere-supporting peptide',
+          detailedDescription: 'Epitalon is a synthetic peptide that has shown potential in supporting telomere health and cellular longevity.',
+          mechanism: 'Regulates telomerase activity and supports cellular repair mechanisms through interaction with the pineal gland and various cellular pathways.',
+          commonDosage: '5-10 mg',
+          commonFrequency: 'Daily',
+          averageRating: 4.0,
+          totalExperiences: 92,
+          commonEffects: ['Anti-aging', 'Better sleep', 'Enhanced recovery', 'Improved energy'],
+          sideEffects: ['Mild injection site reactions', 'Temporary fatigue'],
+          popularity: 55,
+          commonStacks: ['Thymosin Alpha-1', 'BPC-157'],
+          dosageRanges: {
+            low: '5-7 mg',
+            medium: '7-10 mg',
+            high: '10-15 mg'
+          },
+          timeline: {
+            onset: '2-3 weeks',
+            peak: '4-6 weeks',
+            duration: '4-6 weeks post-cycle'
+          }
+        },
+        {
+          name: 'Selank',
+          category: 'Cognitive Enhancement',
+          description: 'Anxiolytic and nootropic peptide',
+          detailedDescription: 'Selank is a synthetic peptide with anxiolytic and nootropic properties, derived from the immunomodulatory peptide tuftsin.',
+          mechanism: 'Modulates GABA and serotonin systems while enhancing BDNF expression, leading to reduced anxiety and improved cognitive function.',
+          commonDosage: '200-400 mcg',
+          commonFrequency: 'Daily',
+          averageRating: 4.2,
+          totalExperiences: 85,
+          commonEffects: ['Reduced anxiety', 'Better focus', 'Enhanced memory', 'Improved mood'],
+          sideEffects: ['Mild headaches', 'Temporary drowsiness', 'Injection site reactions'],
+          popularity: 68,
+          commonStacks: ['Semax', 'Cerebrolysin'],
+          dosageRanges: {
+            low: '200-300 mcg',
+            medium: '300-400 mcg',
+            high: '400-500 mcg'
+          },
+          timeline: {
+            onset: '1-2 hours',
+            peak: '4-6 hours',
+            duration: '12-24 hours'
+          }
+        },
+        {
+          name: 'Semax',
+          category: 'Cognitive Enhancement',
+          description: 'Nootropic peptide',
+          detailedDescription: 'Semax is a synthetic peptide with potent nootropic properties, derived from ACTH(4-10).',
+          mechanism: 'Enhances BDNF expression and modulates neurotransmitter systems, particularly dopamine and serotonin, leading to improved cognitive function.',
+          commonDosage: '200-400 mcg',
+          commonFrequency: 'Daily',
+          averageRating: 4.4,
+          totalExperiences: 95,
+          commonEffects: ['Enhanced focus', 'Better memory', 'Improved mood', 'Increased energy'],
+          sideEffects: ['Mild headaches', 'Temporary anxiety', 'Insomnia'],
+          popularity: 72,
+          commonStacks: ['Selank', 'Cerebrolysin'],
+          dosageRanges: {
+            low: '200-300 mcg',
+            medium: '300-400 mcg',
+            high: '400-500 mcg'
+          },
+          timeline: {
+            onset: '30-60 minutes',
+            peak: '2-4 hours',
+            duration: '8-12 hours'
+          }
+        },
+        {
+          name: 'Hexarelin',
+          category: 'Growth Hormone',
+          description: 'Growth hormone releasing peptide',
+          detailedDescription: 'Hexarelin is a synthetic hexapeptide that strongly stimulates growth hormone release and has shown potential in various therapeutic applications.',
+          mechanism: 'Binds to the ghrelin receptor and stimulates growth hormone release through the activation of the hypothalamic-pituitary axis.',
+          commonDosage: '100-200 mcg',
+          commonFrequency: '2-3x daily',
+          averageRating: 4.1,
+          totalExperiences: 88,
+          commonEffects: ['Muscle growth', 'Better recovery', 'Improved sleep', 'Enhanced well-being'],
+          sideEffects: ['Increased appetite', 'Water retention', 'Temporary numbness'],
+          popularity: 65,
+          commonStacks: ['CJC-1295', 'Ipamorelin'],
+          dosageRanges: {
+            low: '100-150 mcg',
+            medium: '150-200 mcg',
+            high: '200-300 mcg'
+          },
+          timeline: {
+            onset: '1-2 weeks',
+            peak: '3-4 weeks',
+            duration: '2-3 weeks post-cycle'
+          }
+        },
+        {
+          name: 'GLP-1',
+          category: 'Metabolic Health',
+          description: 'Glucagon-like peptide-1',
+          detailedDescription: 'GLP-1 is a naturally occurring incretin hormone that plays a crucial role in glucose metabolism and appetite regulation. It is produced in the intestinal L-cells and has multiple effects on glucose homeostasis.',
+          mechanism: 'Binds to GLP-1 receptors in the pancreas, brain, and other tissues, stimulating insulin secretion, inhibiting glucagon release, slowing gastric emptying, and promoting satiety.',
+          commonDosage: '0.5-2 mg',
+          commonFrequency: 'Daily',
+          averageRating: 4.6,
+          totalExperiences: 245,
+          commonEffects: ['Appetite suppression', 'Blood sugar control', 'Weight loss', 'Improved satiety'],
+          sideEffects: ['Nausea', 'Gastrointestinal discomfort', 'Headaches', 'Dizziness'],
+          popularity: 90,
+          commonStacks: ['Semaglutide', 'Tirzepatide'],
+          dosageRanges: {
+            low: '0.5-1 mg',
+            medium: '1-1.5 mg',
+            high: '1.5-2 mg'
+          },
+          timeline: {
+            onset: '1-2 hours',
+            peak: '2-4 hours',
+            duration: '6-8 hours'
+          }
+        },
+        {
+          name: 'Semaglutide',
+          category: 'Metabolic Health',
+          description: 'GLP-1 receptor agonist',
+          detailedDescription: 'Semaglutide is a long-acting GLP-1 receptor agonist that has shown significant efficacy in weight management and glycemic control. It has a longer half-life than native GLP-1.',
+          mechanism: 'Binds to GLP-1 receptors with high affinity, providing sustained activation of the GLP-1 pathway, leading to reduced appetite and improved glucose control.',
+          commonDosage: '0.25-2.4 mg',
+          commonFrequency: 'Weekly',
+          averageRating: 4.7,
+          totalExperiences: 312,
+          commonEffects: ['Significant weight loss', 'Improved glycemic control', 'Reduced appetite', 'Better satiety'],
+          sideEffects: ['Nausea', 'Vomiting', 'Diarrhea', 'Constipation', 'Abdominal pain'],
+          popularity: 95,
+          commonStacks: ['Tirzepatide', 'Liraglutide'],
+          dosageRanges: {
+            low: '0.25-0.5 mg',
+            medium: '1-1.7 mg',
+            high: '2-2.4 mg'
+          },
+          timeline: {
+            onset: '1-2 days',
+            peak: '4-8 weeks',
+            duration: '1 week'
+          }
+        },
+        {
+          name: 'Tirzepatide',
+          category: 'Metabolic Health',
+          description: 'Dual GIP/GLP-1 receptor agonist',
+          detailedDescription: 'Tirzepatide is a novel dual agonist that activates both GIP and GLP-1 receptors, offering enhanced metabolic benefits compared to single-receptor agonists.',
+          mechanism: 'Simultaneously activates GIP and GLP-1 receptors, providing synergistic effects on glucose control, weight loss, and metabolic health.',
+          commonDosage: '2.5-15 mg',
+          commonFrequency: 'Weekly',
+          averageRating: 4.8,
+          totalExperiences: 198,
+          commonEffects: ['Enhanced weight loss', 'Superior glycemic control', 'Improved insulin sensitivity', 'Better satiety'],
+          sideEffects: ['Nausea', 'Vomiting', 'Diarrhea', 'Decreased appetite', 'Abdominal pain'],
+          popularity: 92,
+          commonStacks: ['Semaglutide', 'Liraglutide'],
+          dosageRanges: {
+            low: '2.5-5 mg',
+            medium: '7.5-10 mg',
+            high: '12.5-15 mg'
+          },
+          timeline: {
+            onset: '1-2 days',
+            peak: '4-8 weeks',
+            duration: '1 week'
+          }
+        },
+        {
+          name: 'Liraglutide',
+          category: 'Metabolic Health',
+          description: 'GLP-1 receptor agonist',
+          detailedDescription: 'Liraglutide is a long-acting GLP-1 receptor agonist that has been extensively studied for its effects on weight management and type 2 diabetes.',
+          mechanism: 'Binds to GLP-1 receptors with high affinity, providing sustained activation of the GLP-1 pathway, leading to reduced appetite and improved glucose control.',
+          commonDosage: '0.6-3 mg',
+          commonFrequency: 'Daily',
+          averageRating: 4.5,
+          totalExperiences: 278,
+          commonEffects: ['Weight loss', 'Improved glycemic control', 'Reduced appetite', 'Better satiety'],
+          sideEffects: ['Nausea', 'Vomiting', 'Diarrhea', 'Constipation', 'Abdominal pain'],
+          popularity: 88,
+          commonStacks: ['Semaglutide', 'Tirzepatide'],
+          dosageRanges: {
+            low: '0.6-1.2 mg',
+            medium: '1.8-2.4 mg',
+            high: '2.4-3 mg'
+          },
+          timeline: {
+            onset: '1-2 days',
+            peak: '2-4 weeks',
+            duration: '24 hours'
+          }
+        },
+        {
+          name: 'Exenatide',
+          category: 'Metabolic Health',
+          description: 'GLP-1 receptor agonist',
+          detailedDescription: 'Exenatide is a synthetic version of exendin-4, a GLP-1 receptor agonist derived from the saliva of the Gila monster. It has been used for type 2 diabetes management.',
+          mechanism: 'Binds to GLP-1 receptors, stimulating insulin secretion, inhibiting glucagon release, and slowing gastric emptying.',
+          commonDosage: '5-10 mcg',
+          commonFrequency: 'Twice daily',
+          averageRating: 4.3,
+          totalExperiences: 156,
+          commonEffects: ['Weight loss', 'Improved glycemic control', 'Reduced appetite', 'Better satiety'],
+          sideEffects: ['Nausea', 'Vomiting', 'Diarrhea', 'Dizziness', 'Headaches'],
+          popularity: 75,
+          commonStacks: ['Semaglutide', 'Liraglutide'],
+          dosageRanges: {
+            low: '5 mcg',
+            medium: '7.5 mcg',
+            high: '10 mcg'
+          },
+          timeline: {
+            onset: '1-2 hours',
+            peak: '2-3 hours',
+            duration: '6-8 hours'
+          }
+        },
+        {
+          name: 'Dulaglutide',
+          category: 'Metabolic Health',
+          description: 'Long-acting GLP-1 receptor agonist',
+          detailedDescription: 'Dulaglutide is a long-acting GLP-1 receptor agonist that has shown efficacy in glycemic control and weight management in type 2 diabetes.',
+          mechanism: 'Binds to GLP-1 receptors with high affinity, providing sustained activation of the GLP-1 pathway, leading to reduced appetite and improved glucose control.',
+          commonDosage: '0.75-4.5 mg',
+          commonFrequency: 'Weekly',
+          averageRating: 4.4,
+          totalExperiences: 189,
+          commonEffects: ['Weight loss', 'Improved glycemic control', 'Reduced appetite', 'Better satiety'],
+          sideEffects: ['Nausea', 'Vomiting', 'Diarrhea', 'Abdominal pain', 'Decreased appetite'],
+          popularity: 82,
+          commonStacks: ['Semaglutide', 'Tirzepatide'],
+          dosageRanges: {
+            low: '0.75-1.5 mg',
+            medium: '2.25-3 mg',
+            high: '3.75-4.5 mg'
+          },
+          timeline: {
+            onset: '1-2 days',
+            peak: '2-4 weeks',
+            duration: '1 week'
+          }
+        },
+        {
+          name: 'Retatrutide',
+          category: 'Metabolic Health',
+          description: 'Triple agonist (GLP-1/GIP/Glucagon)',
+          detailedDescription: 'Retatrutide is a novel investigational triple agonist that simultaneously activates GLP-1, GIP, and glucagon receptors. This unique mechanism offers enhanced metabolic benefits compared to single or dual agonists.',
+          mechanism: 'Simultaneously activates GLP-1, GIP, and glucagon receptors, providing synergistic effects on glucose control, weight loss, and metabolic health through multiple pathways.',
+          commonDosage: '1-12 mg',
+          commonFrequency: 'Weekly',
+          averageRating: 4.9,
+          totalExperiences: 156,
+          commonEffects: ['Enhanced weight loss', 'Superior glycemic control', 'Improved insulin sensitivity', 'Better satiety', 'Increased energy expenditure'],
+          sideEffects: ['Nausea', 'Vomiting', 'Diarrhea', 'Decreased appetite', 'Abdominal pain', 'Increased heart rate'],
+          popularity: 94,
+          commonStacks: ['Semaglutide', 'Tirzepatide'],
+          dosageRanges: {
+            low: '1-4 mg',
+            medium: '5-8 mg',
+            high: '9-12 mg'
+          },
+          timeline: {
+            onset: '1-2 days',
+            peak: '4-8 weeks',
+            duration: '1 week'
+          }
         }
       ];
 

@@ -12,10 +12,9 @@ const authenticateToken = async (req, res, next) => {
 
     if (!token) {
       console.log('No token provided');
-      return res.status(401).json({
-        success: false,
-        message: 'Access token required'
-      });
+      // Instead of returning 401, set req.user to null and continue
+      req.user = null;
+      return next();
     }
 
     console.log('Token found, attempting to verify...');
@@ -34,31 +33,39 @@ const authenticateToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     console.log('Token verified successfully, decoded:', decoded);
     
-    req.user = decoded;
+    // Set both userId and _id to ensure compatibility
+    req.user = {
+      ...decoded,
+      _id: decoded.userId
+    };
     next();
   } catch (error) {
     console.log('Token verification failed:', error);
     console.log('Error name:', error.name);
     console.log('Error message:', error.message);
     
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Access token expired'
-      });
-    }
-    
-    return res.status(403).json({
+    // Instead of returning 401/403, set req.user to null and continue
+    req.user = null;
+    next();
+  }
+};
+
+// Middleware to require authentication
+const requireAuth = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
       success: false,
-      message: 'Invalid access token'
+      message: 'Authentication required'
     });
   }
+  next();
 };
 
 console.log('authenticateToken function defined:', typeof authenticateToken);
 
 const middleware = {
-  authenticateToken
+  authenticateToken,
+  requireAuth
 };
 
 console.log('About to export auth middleware:', middleware);

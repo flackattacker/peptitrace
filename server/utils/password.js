@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 /**
  * Hashes the password using bcrypt algorithm
@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
  * @return {string} Password hash
  */
 const generatePasswordHash = async (password) => {
-  const salt = await bcrypt.genSalt();
+  const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
   return hash;
 };
@@ -28,13 +28,8 @@ const validatePassword = async (password, hash) => {
  * @return {boolean} True if passed string seems like valid hash, false otherwise
  */
 const isPasswordHash = (hash) => {
-  if (!hash || hash.length !== 60) return false;
-  try {
-    bcrypt.getRounds(hash);
-    return true;
-  } catch {
-    return false;
-  }
+  if (!hash || typeof hash !== 'string') return false;
+  return hash.startsWith('$2a$') || hash.startsWith('$2b$');
 };
 
 module.exports = {

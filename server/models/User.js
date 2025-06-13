@@ -3,18 +3,36 @@ const mongoose = require('mongoose');
 const { validatePassword, isPasswordHash } = require('../utils/password.js');
 const {randomUUID} = require("crypto");
 
+// Helper function to convert height between units
+const convertHeight = (height, fromUnit, toUnit) => {
+  if (!height) return height;
+  if (fromUnit === toUnit) return height;
+  
+  if (fromUnit === 'ft' && toUnit === 'cm') {
+    return Math.round(height * 30.48); // Convert feet to cm
+  } else if (fromUnit === 'cm' && toUnit === 'ft') {
+    return Math.round((height / 30.48) * 100) / 100; // Convert cm to feet
+  }
+  return height;
+};
+
 const schema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
   email: {
     type: String,
     required: true,
-    index: true,
     unique: true,
-    lowercase: true,
+    trim: true,
+    lowercase: true
   },
   password: {
     type: String,
-    required: true,
-    validate: { validator: isPasswordHash, message: 'Invalid password hash' },
+    required: true
   },
   demographics: {
     age: {
@@ -33,8 +51,8 @@ const schema = new mongoose.Schema({
     },
     height: {
       type: Number,
-      min: 100,
-      max: 250,
+      min: 100, // 3.28 ft
+      max: 250, // 8.2 ft
     },
     activityLevel: {
       type: String,
@@ -99,8 +117,11 @@ const schema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-    immutable: true,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   },
   lastLoginAt: {
     type: Date,
@@ -124,14 +145,28 @@ const schema = new mongoose.Schema({
   versionKey: false,
 });
 
-schema.set('toJSON', {
-  /* eslint-disable */
-  transform: (doc, ret, options) => {
-    delete ret.password;
-    return ret;
-  },
-  /* eslint-enable */
+// Update the updatedAt timestamp before saving
+schema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  
+  // Convert height to cm for storage if it's in feet
+  if (this.isModified('demographics.height') && this.preferences?.units?.height === 'ft') {
+    this.demographics.height = convertHeight(this.demographics.height, 'ft', 'cm');
+  }
+  
+  next();
 });
+
+// Convert height back to feet when retrieving if that's the preferred unit
+schema.methods.toJSON = function() {
+  const obj = this.toObject();
+  
+  if (obj.preferences?.units?.height === 'ft' && obj.demographics?.height) {
+    obj.demographics.height = convertHeight(obj.demographics.height, 'cm', 'ft');
+  }
+  
+  return obj;
+};
 
 const User = mongoose.model('User', schema);
 

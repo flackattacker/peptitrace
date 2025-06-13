@@ -4,7 +4,6 @@ const experienceSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
     index: true
   },
   peptideId: {
@@ -149,10 +148,27 @@ const experienceSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  // Vendor Information
+  vendor: {
+    name: {
+      type: String,
+      trim: true
+    },
+    quantity: {
+      type: String,
+      trim: true
+    },
+    batchId: {
+      type: String,
+      trim: true
+    }
   }
 }, {
   versionKey: false,
-  timestamps: { updatedAt: 'updatedAt' }
+  timestamps: { updatedAt: 'updatedAt' },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
 // Indexes for performance
@@ -163,10 +179,20 @@ experienceSchema.index({ trackingId: 1 });
 
 // Transform output to match frontend expectations
 experienceSchema.set('toJSON', {
+  virtuals: true,
   transform: (doc, ret) => {
     ret.submittedAt = ret.createdAt;
     return ret;
   }
+});
+
+experienceSchema.virtual('averageRating').get(function() {
+  const outcomes = this.outcomes;
+  if (!outcomes) return 0;
+  
+  const sum = outcomes.energy + outcomes.sleep + outcomes.mood + 
+              outcomes.performance + outcomes.recovery;
+  return Math.round((sum / 5) * 10) / 10;
 });
 
 const Experience = mongoose.model('Experience', experienceSchema);

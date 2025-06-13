@@ -15,7 +15,8 @@ const peptideSchema = new mongoose.Schema({
       'Growth Hormone',
       'Performance & Enhancement',
       'Anti-Aging',
-      'Cognitive Enhancement'
+      'Cognitive Enhancement',
+      'Metabolic Health'
     ]
   },
   description: {
