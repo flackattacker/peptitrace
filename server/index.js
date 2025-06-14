@@ -18,7 +18,6 @@ if (!MONGODB_URI) {
   console.error('Current environment variables:', {
     NODE_ENV: process.env.NODE_ENV,
     PORT: process.env.PORT,
-    // Don't log sensitive values
     MONGODB_URI_SET: !!process.env.MONGODB_URI
   });
   process.exit(1);
