@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js || cat /root/.npm/_logs/*.log",
+    "poststart": "cat /root/.npm/_logs/*.log",
     "dev": "nodemon index.js",
     "build": "echo 'No build step required for server'"
   },
