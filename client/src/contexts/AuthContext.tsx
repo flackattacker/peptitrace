@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (token && userData) {
         try {
           // Validate token by making a request to a protected endpoint
-          await api.get('/api/auth/validate');
+          await api.get('/api/users/validate');
           setUser(JSON.parse(userData));
         } catch (error) {
           console.error('Token validation failed:', error);
