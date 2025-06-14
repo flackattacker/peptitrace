@@ -38,4 +38,4 @@ ehthumbs.db
 Thumbs.db
 
 # Testing
-/coverage 
+/coverage node_modules/
