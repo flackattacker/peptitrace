@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const AuthService = require('../services/AuthService.js');
+const AuthService = require('../services/AuthService');
 
 console.log('Loading auth middleware...');
 
@@ -9,25 +9,34 @@ const authenticateToken = async (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
+      req.user = null;
+      return next();
     }
 
-    const user = await AuthService.verifyToken(token);
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid token' });
+    if (!process.env.JWT_ACCESS_SECRET) {
+      console.error('JWT_ACCESS_SECRET not configured');
+      return res.status(500).json({ 
+        success: false,
+        message: 'Server configuration error' 
+      });
     }
 
-    req.user = user;
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    req.user = decoded;
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
-    res.status(401).json({ message: 'Invalid token' });
+    req.user = null;
+    next();
   }
 };
 
 const requireAuth = (req, res, next) => {
   if (!req.user) {
-    return res.status(401).json({ message: 'Authentication required' });
+    return res.status(401).json({ 
+      success: false,
+      message: 'Authentication required' 
+    });
   }
   next();
 };

@@ -86,8 +86,15 @@ router.put('/me', authenticateToken, async (req, res) => {
 router.post('/register', async (req, res) => {
   console.log('userRoutes: POST /register endpoint hit');
   try {
-    const { username, email, password } = req.body;
+    let { email, password } = req.body;
     
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and password are required'
+      });
+    }
+
     // Check if user already exists
     const existingUser = await UserService.getUserByEmail(email);
     if (existingUser) {
@@ -97,27 +104,44 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // Generate username from email
+    const username = email.split('@')[0] + '_' + Math.random().toString(36).substring(2, 8);
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     // Create new user
     const user = await UserService.createUser({
       username,
       email,
-      password
+      password: hashedPassword
     });
 
     // Generate JWT token
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { _id: user._id },
-      process.env.JWT_SECRET,
+      process.env.JWT_ACCESS_SECRET,
       { expiresIn: '24h' }
+    );
+
+    const refreshToken = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
     );
 
     res.status(201).json({
       success: true,
-      token,
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email
+      data: {
+        user: {
+          _id: user._id,
+          email: user.email,
+          demographics: user.demographics,
+          preferences: user.preferences
+        },
+        accessToken,
+        refreshToken
       }
     });
   } catch (error) {
@@ -158,19 +182,29 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { _id: user._id },
-      process.env.JWT_SECRET,
+      process.env.JWT_ACCESS_SECRET,
       { expiresIn: '24h' }
     );
 
-    res.status(200).json({
+    const refreshToken = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
       success: true,
-      token,
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email
+      data: {
+        user: {
+          _id: user._id,
+          email: user.email,
+          demographics: user.demographics,
+          preferences: user.preferences
+        },
+        accessToken,
+        refreshToken
       }
     });
   } catch (error) {

@@ -42,12 +42,12 @@ export function Register() {
         description: "Account created successfully",
       })
       navigate("/login")
-    } catch (error) {
+    } catch (error: any) {
       console.error("Register form error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error?.message,
+        description: error?.response?.data?.error || error?.message || "Failed to create account",
       })
     } finally {
       setLoading(false)

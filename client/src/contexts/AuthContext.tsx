@@ -82,9 +82,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('userData', JSON.stringify(response.data.user));
       
       setUser(response.data.user);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Register error:', error);
-      throw error;
+      throw new Error(error?.response?.data?.error || error.message);
     }
   };
 

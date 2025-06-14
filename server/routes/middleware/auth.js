@@ -2,6 +2,7 @@ console.log('Loading auth middleware...');
 
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const AuthService = require('../../services/AuthService');
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -36,7 +37,7 @@ const authenticateToken = async (req, res, next) => {
     // Set both userId and _id to ensure compatibility
     req.user = {
       ...decoded,
-      _id: decoded.userId
+      _id: decoded._id
     };
     next();
   } catch (error) {

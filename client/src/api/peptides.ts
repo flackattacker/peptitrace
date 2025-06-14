@@ -3,6 +3,7 @@ import api from './api';
 export interface Peptide {
   _id: string;
   name: string;
+  peptide_sequence: string;
   category: string;
   description: string;
   averageRating?: number;
@@ -42,6 +43,7 @@ export interface PeptideDetail {
 
 export interface CreatePeptideData {
   name: string;
+  peptide_sequence: string;
   category: string;
   description: string;
   detailedDescription: string;

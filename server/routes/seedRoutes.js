@@ -9,21 +9,17 @@ const SeedService = require('../services/seedService');
  */
 router.post('/peptides', async (req, res) => {
   try {
-    const result = await SeedService.seedPeptides();
-    
-    res.status(200).json({
+    const peptides = await SeedService.seedPeptides();
+    res.json({
       success: true,
-      message: result.message,
-      data: {
-        count: result.count,
-        peptides: result.peptides || []
-      }
+      message: 'Peptides seeded successfully',
+      count: peptides.length
     });
   } catch (error) {
     console.error('Seed peptides error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      message: error.message
     });
   }
 });
@@ -60,21 +56,17 @@ router.delete('/peptides', async (req, res) => {
  */
 router.post('/effects', async (req, res) => {
   try {
-    const result = await SeedService.seedEffects();
-
-    res.status(200).json({
+    const effects = await SeedService.seedEffects();
+    res.json({
       success: true,
-      message: result.message,
-      data: {
-        count: result.count,
-        effects: result.effects || []
-      }
+      message: 'Effects seeded successfully',
+      count: effects.length
     });
   } catch (error) {
     console.error('Seed effects error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      message: error.message
     });
   }
 });

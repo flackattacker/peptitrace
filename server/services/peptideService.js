@@ -206,7 +206,8 @@ class PeptideService {
         $or: [
           { name: searchRegex },
           { description: searchRegex },
-          { category: searchRegex }
+          { category: searchRegex },
+          { peptide_sequence: searchRegex }
         ]
       }).sort({ name: 1 });
 

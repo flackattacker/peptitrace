@@ -29,6 +29,7 @@ export function PeptideCreateForm({ onSuccess, onCancel }: PeptideCreateFormProp
 
   const [formData, setFormData] = useState<CreatePeptideData>({
     name: "",
+    peptide_sequence: "",
     category: "",
     description: "",
     detailedDescription: "",
@@ -153,7 +154,19 @@ export function PeptideCreateForm({ onSuccess, onCancel }: PeptideCreateFormProp
     e.preventDefault()
     console.log("PeptideCreateForm: Form submitted", formData)
 
-    if (!formData.name || !formData.category || !formData.description ||
+    // Validate peptide sequence format
+    const peptideSequenceRegex = /^[A-Za-z-]+(?:-[A-Za-z-]+)*$/;
+    if (!peptideSequenceRegex.test(formData.peptide_sequence)) {
+      console.log("PeptideCreateForm: Validation failed - invalid peptide sequence format")
+      toast({
+        title: "Error",
+        description: "Please enter a valid peptide sequence using standard amino acid codes",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (!formData.name || !formData.peptide_sequence || !formData.category || !formData.description ||
         !formData.detailedDescription || !formData.mechanism ||
         !formData.commonDosage || !formData.commonFrequency) {
       console.log("PeptideCreateForm: Validation failed - missing required fields")
@@ -215,6 +228,17 @@ export function PeptideCreateForm({ onSuccess, onCancel }: PeptideCreateFormProp
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 placeholder="e.g., BPC-157"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="peptide_sequence">Peptide Sequence *</Label>
+              <Input
+                id="peptide_sequence"
+                value={formData.peptide_sequence}
+                onChange={(e) => handleInputChange('peptide_sequence', e.target.value)}
+                placeholder="e.g., H-Gly-Pro-Glu-Pro-Lys-Pro-Glu-Asp-Lys-Asp-Ala-Gly-Leu-Val-OH"
                 required
               />
             </div>

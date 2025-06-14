@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 
+// Regular expression for validating peptide sequences
+// Allows for standard amino acid codes (single letter or three letter)
+// Also allows for common modifications and terminal groups
+const PEPTIDE_SEQUENCE_REGEX = /^[A-Za-z0-9\-\[\]\(\)\.]+(?:-[A-Za-z0-9\-\[\]\(\)\.]+)*$/;
+
 const peptideSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -7,16 +12,34 @@ const peptideSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
+  peptide_sequence: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function(v) {
+        return PEPTIDE_SEQUENCE_REGEX.test(v);
+      },
+      message: props => `${props.value} is not a valid peptide sequence!`
+    }
+  },
   category: {
     type: String,
     required: true,
     enum: [
       'Healing & Recovery',
       'Growth Hormone',
-      'Performance & Enhancement',
       'Anti-Aging',
+      'Performance & Enhancement',
       'Cognitive Enhancement',
-      'Metabolic Health'
+      'GLP-1 Agonist',
+      'GLP-1/GIP Agonist',
+      'GLP-1/GIP/Glucagon Agonist',
+      'Immune Support',
+      'Fat Loss',
+      'Metabolic Control',
+      'Weight Management',
+      'Glycemic Control',
+      'Appetite Regulation'
     ]
   },
   description: {
@@ -39,17 +62,6 @@ const peptideSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  averageRating: {
-    type: Number,
-    default: 0,
-    min: 0,
-    max: 5
-  },
-  totalExperiences: {
-    type: Number,
-    default: 0,
-    min: 0
-  },
   commonEffects: [{
     type: String,
     required: true
@@ -57,9 +69,6 @@ const peptideSchema = new mongoose.Schema({
   sideEffects: [{
     type: String,
     required: true
-  }],
-  commonStacks: [{
-    type: String
   }],
   dosageRanges: {
     low: {
@@ -93,7 +102,15 @@ const peptideSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for search functionality
-peptideSchema.index({ name: 'text', description: 'text', category: 'text' });
+// Add text index for search functionality
+peptideSchema.index({
+  name: 'text',
+  description: 'text',
+  detailedDescription: 'text',
+  mechanism: 'text',
+  commonEffects: 'text'
+});
 
-module.exports = mongoose.model('Peptide', peptideSchema);
+const Peptide = mongoose.model('Peptide', peptideSchema);
+
+module.exports = Peptide;

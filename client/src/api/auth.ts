@@ -1,4 +1,5 @@
 import api from './api';
+import { AxiosError } from 'axios';
 
 // Description: Login user functionality
 // Endpoint: POST /api/users/login
@@ -34,9 +35,11 @@ export const register = async (email: string, password: string) => {
     return response.data;
   } catch (error) {
     console.error('Register API error:', error);
-    console.error('Register API error response:', error?.response?.data);
-    console.error('Register API error status:', error?.response?.status);
-    throw new Error(error?.response?.data?.message || error.message);
+    if (error instanceof AxiosError) {
+      console.error('Register API error response:', error.response?.data);
+      console.error('Register API error status:', error.response?.status);
+    }
+    throw error;
   }
 };
 
