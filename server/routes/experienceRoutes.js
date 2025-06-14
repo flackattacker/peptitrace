@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ExperienceService = require('../services/experienceService');
 const VoteService = require('../services/voteService');
-const { authenticateToken, requireAuth } = require('./middleware/auth');
+const { authenticateToken, requireAuth } = require('../middleware/auth');
 
 console.log('experienceRoutes.js: Loading experience routes file');
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const PeptideService = require('../services/peptideService');
-const { authenticateToken } = require('./middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 
 /**
  * @route GET /api/peptides

@@ -1,6 +1,6 @@
 const express = require('express');
 const VoteService = require('../services/voteService');
-const { authenticateToken, requireAuth } = require('./middleware/auth');
+const { authenticateToken, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
