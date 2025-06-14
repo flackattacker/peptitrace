@@ -73,7 +73,7 @@ class SeedService {
           name: effect,
           description: `Effect related to ${effect}`,
           type: effect.toLowerCase().includes('side') ? 'negative' : 'positive',
-          category: effect.toLowerCase().includes('side') ? 'Side Effect' : 'Benefit',
+          category: effect.toLowerCase().includes('side') ? 'Side Effect' : 'Physical Performance',
           frequency: 'common',
           isCommon: true
         }))
