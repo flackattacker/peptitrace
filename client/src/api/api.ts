@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosError, InternalAxiosRequestConfig, Axio
 import JSONbig from 'json-bigint';
 
 const localApi = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://10.0.0.227:3000',
   headers: {
     'Content-Type': 'application/json',
   },

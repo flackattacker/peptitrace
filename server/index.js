@@ -8,7 +8,14 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}));
 app.use(express.json());
 
 // Routes
@@ -24,7 +31,7 @@ connectDB();
 
 // Start server
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
   console.log('Environment:', {
     NODE_ENV: process.env.NODE_ENV,
