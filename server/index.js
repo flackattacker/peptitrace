@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -14,6 +15,12 @@ app.use(express.json());
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   console.error('MONGODB_URI environment variable is not set');
+  console.error('Current environment variables:', {
+    NODE_ENV: process.env.NODE_ENV,
+    PORT: process.env.PORT,
+    // Don't log sensitive values
+    MONGODB_URI_SET: !!process.env.MONGODB_URI
+  });
   process.exit(1);
 }
 
