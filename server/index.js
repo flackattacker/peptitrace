@@ -83,6 +83,54 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!' });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log('Environment:', {
+    NODE_ENV: process.env.NODE_ENV,
+    PORT: process.env.PORT,
+    MONGODB_URI_SET: !!process.env.MONGODB_URI
+  });
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Starting graceful shutdown...');
+  server.close(() => {
+    console.log('HTTP server closed');
+    mongoose.connection.close(false, () => {
+      console.log('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received. Starting graceful shutdown...');
+  server.close(() => {
+    console.log('HTTP server closed');
+    mongoose.connection.close(false, () => {
+      console.log('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      process.exit(1);
+    });
+  });
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      process.exit(1);
+    });
+  });
 }); 
