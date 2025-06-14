@@ -1,1 +1,1 @@
-web: cd client && npm install && npm run build && cd ../server && npm install --omit=dev && NODE_ENV=production npm start 
+web: cd client && npm install && npm run build && cd ../server && npm install && NODE_ENV=production node index.js 
